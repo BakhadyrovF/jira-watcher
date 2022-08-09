@@ -18,23 +18,3 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
 
-
-Route::get('/send-request', function (\App\Services\JiraService $jiraService, \App\Services\TelegramService $telegramService) {
-
-
-
-
-    $response = $jiraService->sendRequest('search', [
-        'jql' => 'assignee="firuzbekbakhadirov@77projects.com" AND created >= -2d ORDER BY created ASC'
-    ]);
-
-    return $response;
-
-
-
-
-
-
-
-
-});
