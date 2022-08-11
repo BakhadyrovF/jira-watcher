@@ -51,7 +51,7 @@ final class TelegramService
                         ->firstOrCreate([
                             'telegram_chat_id' => $value['id']
                         ], [
-                            'telegram_first_name' => $this->getFromValues()['first_name'],
+                            'telegram_first_name' => $this->getFromValues()['first_name'] ?? null,
                             'telegram_username' => $this->getFromValues()['username'] ?? null
                         ]);
 
@@ -66,7 +66,16 @@ final class TelegramService
 
     protected function getFromValues()
     {
-        return request()->all()['message']['from'] ?? null;
+        if (array_key_exists('message', \request()->all())) {
+            return \request()->all()['message']['from'] ?? null;
+        }
+
+        if (array_key_exists('edited_message', \request()->all())) {
+            return \request()->all()['edited_message']['from'];
+        }
+
+
+
     }
 
     private function urlWithMethod(string $method)

@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
@@ -22,7 +23,8 @@ class User extends Authenticatable
         'telegram_chat_id',
         'telegram_username',
         'atlassian_email',
-        'atlassian_access_token'
+        'atlassian_api_token',
+        'is_valid'
     ];
 
     /**
@@ -43,4 +45,9 @@ class User extends Authenticatable
     protected $casts = [
         'email_verified_at' => 'datetime',
     ];
+
+    public function issues(): HasMany
+    {
+        return $this->hasMany(Issue::class, 'user_id', 'id');
+    }
 }

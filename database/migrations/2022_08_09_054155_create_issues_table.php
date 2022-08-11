@@ -19,7 +19,7 @@ return new class extends Migration
             $table->string('key')->unique();
             $table->string('link');
             $table->text('summary');
-            $table->text('description');
+            $table->text('description')->nullable();
             $table->foreignId('user_id')->constrained('users')->cascadeOnDelete();
             $table->timestamp('issue_created_at');
             $table->timestamps();

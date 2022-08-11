@@ -20,10 +20,13 @@ class EmailCommand extends Command
     public function handle()
     {
         $update = $this->getUpdate();
-        info($update->message->text);
-        $validator = Validator::make([
-            'email' => str_replace('/email ','', $update->message->text)
-        ], [
+        $email = str_replace('/email ', '', $update->message?->text);
+
+        if (empty($email)) {
+            $email = str_replace('/email ', '', $update->editedMessage->text);
+        }
+
+        $validator = Validator::make(compact('email'), [
             'email' => ['filled', 'string', 'email:filter']
         ]);
 
@@ -31,17 +34,34 @@ class EmailCommand extends Command
         $text .= toBold('Пример:') . PHP_EOL;
         $text .= '/email fooBarBaz@gmail.com';
         if ($validator->fails()) {
-            return $this->replyWithMessage([
+            $this->replyWithMessage([
                 'text' => $text,
                 'parse_mode' => 'HTML'
             ]);
+
+            return true;
         }
 
-        $this->replyWithMessage([
-            'text' => 'CORRECT'
+        if (auth()->user()->atlassian_email === $email) {
+            $this->replyWithMessage([
+                'text' => Emojify::text(':x:') . 'Новая почта должна отличаться от старого!'
+            ]);
+
+            return true;
+        }
+
+        auth()->user()->update([
+            'atlassian_email' => $email,
+            'is_valid' => false
         ]);
 
-        // Callback
+        $this->replyWithMessage([
+            'text' =>  Emojify::text(':white_check_mark:') . 'Ваша почта была обновлена!' . PHP_EOL . 'Отправьте /start чтобы продолжить.'
+        ]);
+
+        return true;
+
+
 
     }
 }

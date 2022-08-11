@@ -15,20 +15,33 @@ final class JiraService
     /**
      * @param string $path
      * @param array $query
+     * @return \GuzzleHttp\Promise\PromiseInterface|\Illuminate\Http\Client\Response
      * @throws BadRequestException
-     * @return array
      */
-    public function sendRequest(string $path, array $query = []): array
+    public function sendRequest(string $path, array $credentials, array $query = []): \GuzzleHttp\Promise\PromiseInterface|\Illuminate\Http\Client\Response
     {
-        $response = Http::withBasicAuth(config('credentials.jira.email'), config('credentials.jira.token'))
+        $response = Http::withBasicAuth($credentials['email'], $credentials['token'])
             ->get($this->urlWithEndpoint($path), $query);
 
+        return $response;
+
+    }
+
+    /**
+     * @return bool
+     */
+    public function isValidCredentials(): bool
+    {
+        $response = $this->sendRequest('myself', [
+            'email' => auth()->user()->atlassian_email ?? '',
+            'token' => auth()->user()->atlassian_api_token ?? ''
+        ]);
+
         if ($response->status() !== Response::HTTP_OK) {
-            throw new BadRequestException('Invalid request');
+            return false;
         }
 
-        return $response->json();
-
+        return true;
     }
 
     /**

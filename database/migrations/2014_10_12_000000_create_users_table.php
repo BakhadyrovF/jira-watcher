@@ -19,7 +19,9 @@ return new class extends Migration
             $table->bigInteger('telegram_chat_id');
             $table->string('telegram_username')->nullable()->unique();
             $table->string('atlassian_email')->nullable()->unique();
-            $table->string('atlassian_access_token')->nullable();
+            $table->string('atlassian_api_token')->nullable();
+            $table->string('base_url')->nullable();
+            $table->boolean('is_valid')->default(false);
             $table->timestamps();
         });
     }

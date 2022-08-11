@@ -114,6 +114,12 @@ return [
         \App\Bot\Commands\HelpCommand::class,
         \App\Bot\Commands\StartCommand::class,
         \App\Bot\Commands\EmailCommand::class,
+        \App\Bot\Commands\TokenCommand::class,
+        \App\Bot\Commands\ResetCommand::class,
+    ],
+
+    'command_names' => [
+        '/start', '/help', '/email', '/token', '/reset'
     ],
 
     /*
